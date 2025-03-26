@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CryptoPin Token</title>
     <style>
-        /* Basic Styling for CryptoPin Homepage */
+        /* Global Styling */
         body {
             margin: 0;
             padding: 0;
@@ -19,6 +19,7 @@
         header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 20px;
             background: rgba(0, 0, 0, 0.8);
         }
@@ -27,19 +28,42 @@
             width: 100px;
         }
 
-        #connectWallet {
+        #menuButton {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Burger Menu Styling */
+        #burgerMenu {
+            display: none;
+            flex-direction: column;
+            background-color: #111;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            width: 200px;
+        }
+
+        #burgerMenu a {
+            padding: 15px;
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px solid #333;
+        }
+
+        #burgerMenu a:hover {
             background-color: #ff9900;
             color: #000;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
         }
 
         /* Hero Section */
         #hero {
-            position: relative;
             text-align: center;
             padding: 100px 20px;
+            position: relative;
         }
 
         #hero h1 {
@@ -61,24 +85,29 @@
             cursor: pointer;
         }
 
-        /* Canvas for Animated Particles */
-        #particleCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
         /* About Section */
-        #about {
+        #about, .description {
             padding: 50px 20px;
             text-align: center;
             background: #111;
         }
 
-        /* Footer Styling */
+        .description {
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
         footer {
             text-align: center;
             padding: 10px;
@@ -90,60 +119,93 @@
     <!-- Header Section -->
     <header>
         <img src="cryptopin-logo.png" alt="CryptoPin Logo" id="logo">
-        <button id="connectWallet">Connect Wallet</button>
+        <button id="menuButton" onclick="toggleMenu()">☰</button>
     </header>
+
+    <!-- Burger Menu -->
+    <div id="burgerMenu">
+        <a href="#roadmap">Roadmap</a>
+        <a href="#whitepaper">Whitepaper</a>
+        <a href="#tokenomics">Tokenomics</a>
+        <a href="#faq">FAQ</a>
+        <a href="#help">Help</a>
+    </div>
 
     <!-- Hero Section -->
     <section id="hero">
         <h1>CryptoPin Token</h1>
         <p>Engage in the crypto world with secure and innovative interactions.</p>
         <button id="buyNow">Buy Now</button>
-        <canvas id="particleCanvas"></canvas>
     </section>
 
-    <!-- About Section -->
-    <section id="about">
-        <h2>About CryptoPin</h2>
-        <p>CryptoPin is designed to connect crypto enthusiasts worldwide through a social platform where users can post, chat, and engage securely.</p>
+    <!-- Animated Descriptions -->
+    <section class="description">
+        <h2>Feature 1</h2>
+        <p>Secure blockchain-based transactions with instant processing.</p>
     </section>
 
-    <!-- Footer Section -->
+    <section class="description">
+        <h2>Feature 2</h2>
+        <p>Seamless integration with multiple crypto networks.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 3</h2>
+        <p>Built-in NFT trading functionality for unique assets.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 4</h2>
+        <p>Advanced security to protect users’ wallets.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 5</h2>
+        <p>Instant staking and yield farming rewards.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 6</h2>
+        <p>Innovative post promotion with crypto payments.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 7</h2>
+        <p>Global social interaction with crypto communities.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 8</h2>
+        <p>AI-powered content curation for better user engagement.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 9</h2>
+        <p>Decentralized governance ensuring fairness.</p>
+    </section>
+
+    <section class="description">
+        <h2>Feature 10</h2>
+        <p>Built for Web 3.0 with full interoperability.</p>
+    </section>
+
+    <!-- Footer -->
     <footer>
         <p>&copy; 2025 CryptoPin Token. All Rights Reserved.</p>
     </footer>
 
+    <!-- JavaScript Section -->
     <script>
-        // Particle Animation using p5.js
-        let canvas;
-        function setup() {
-            canvas = createCanvas(windowWidth, windowHeight);
-            canvas.position(0, 0);
-            canvas.style('z-index', '-1');
-            background(0);
+        // Burger Menu Toggle
+        function toggleMenu() {
+            const menu = document.getElementById('burgerMenu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
-        function draw() {
-            clear();
-            fill(255, 150);
-            noStroke();
-            for (let i = 0; i < 50; i++) {
-                let x = random(width);
-                let y = random(height);
-                let size = random(3, 10);
-                ellipse(x, y, size, size);
-            }
-        }
-
-        // Connect Wallet Button Action
-        document.getElementById('connectWallet').onclick = function() {
-            alert('Wallet Connection Coming Soon!');
-        }
-
-        // Buy Now Button Action
-        document.getElementById('buyNow').onclick = function() {
-            alert('Token Sale Coming Soon!');
+        // Buy Now Button Action - Redirect to buynow.html
+        document.getElementById('buyNow').onclick = function () {
+            window.location.href = 'buynow.html';
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 </body>
 </html>
