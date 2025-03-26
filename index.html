@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,7 +91,8 @@
         }
 
         /* About Section */
-        #about, .description {
+        #about,
+        .description {
             padding: 50px 20px;
             text-align: center;
             background: rgba(0, 0, 0, 0.8);
@@ -107,10 +109,48 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* Exchange Section */
+        #exchangeSection {
+            padding: 50px 20px;
+            background-color: #111;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        #exchangeSection h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #exchangeSection p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        #networkDetails {
+            margin-top: 20px;
+            text-align: left;
+            display: inline-block;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #networkDetails ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #networkDetails li {
+            margin-bottom: 10px;
         }
 
         /* Footer */
@@ -133,6 +173,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Background Animation Canvas -->
@@ -211,6 +252,29 @@
         <p>Built for Web 3.0 with full interoperability.</p>
     </section>
 
+    <!-- Exchange and Network Details Section -->
+    <section id="exchangeSection">
+        <h2>CryptoPin Exchange on PancakeSwap</h2>
+        <p>Buy and exchange CryptoPin tokens securely on PancakeSwap.</p>
+        <p>Connect your wallet and trade with ease.</p>
+
+        <div id="networkDetails">
+            <h3>CryptoPin Contract Addresses:</h3>
+            <ul>
+                <li><strong>Binance Smart Chain (BSC)</strong>: 0x12345...ABC123 (Decimals: 18)</li>
+                <li><strong>Ethereum (ETH)</strong>: 0x67890...DEF456 (Decimals: 18)</li>
+                <li><strong>Polygon (MATIC)</strong>: 0xABCDE...789XYZ (Decimals: 18)</li>
+                <li><strong>Fantom (FTM)</strong>: 0x98765...XYZ123 (Decimals: 18)</li>
+                <li><strong>Avalanche (AVAX)</strong>: 0x24680...QWE456 (Decimals: 18)</li>
+                <li><strong>Arbitrum (ARB)</strong>: 0x11223...RTY789 (Decimals: 18)</li>
+                <li><strong>Optimism (OP)</strong>: 0x44567...PLM123 (Decimals: 18)</li>
+                <li><strong>Solana (SOL)</strong>: 0xAACDE...FRT567 (Decimals: 9)</li>
+                <li><strong>Tron (TRX)</strong>: 0xBBCCF...UVW456 (Decimals: 6)</li>
+                <li><strong>Cardano (ADA)</strong>: 0xAA11B...ZXY123 (Decimals: 6)</li>
+            </ul>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 CryptoPin Token. All Rights Reserved.</p>
@@ -250,57 +314,69 @@
             }
 
             // Draw Particle
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
+draw() {
+    ctx.beginPath(); // Start drawing the path
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); // Draw a circle
+    ctx.fillStyle = this.color; // Set particle color
+    ctx.fill(); // Fill the circle
+    ctx.closePath(); // End drawing
+}
 
-            // Move Particle
+            // Update Particle Position
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
 
-                if (this.size > 0.2) this.size -= 0.02;
-                if (this.size <= 0.2) this.size = 0;
+                // Bounce from screen edges
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.speedX *= -1;
+                }
+                if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+                    this.speedY *= -1;
+                }
 
                 this.draw();
             }
         }
 
-        // Create Particle Array
-        function init() {
+        // Initialize Particles
+        function initParticles() {
             particlesArray = [];
-            for (let i = 0; i < 100; i++) {
-                const size = Math.random() * 3 + 1;
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height;
-                const speedX = (Math.random() - 0.5) * 2;
-                const speedY = (Math.random() - 0.5) * 2;
-                const color = '#ff9900';
+            const numParticles = 100;
+            for (let i = 0; i < numParticles; i++) {
+                let size = Math.random() * 3 + 1;
+                let x = Math.random() * (innerWidth - size * 2) + size;
+                let y = Math.random() * (innerHeight - size * 2) + size;
+                let speedX = (Math.random() - 0.5) * 2;
+                let speedY = (Math.random() - 0.5) * 2;
+                let color = '#ff9900';
+
                 particlesArray.push(new Particle(x, y, size, color, speedX, speedY));
             }
         }
 
-        // Animate Particles
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Animation Loop
+        function animateParticles() {
+            requestAnimationFrame(animateParticles);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
             for (let i = 0; i < particlesArray.length; i++) {
                 particlesArray[i].update();
             }
-            requestAnimationFrame(animate);
         }
-
-        init();
-        animate();
 
         // Resize Canvas on Window Resize
         window.addEventListener('resize', function () {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            init();
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            initParticles();
         });
+
+        // Start Animation
+        initParticles();
+        animateParticles();
     </script>
+
 </body>
+
 </html>
