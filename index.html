@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoPin Token</title>
+    <style>
+        /* Basic Styling for CryptoPin Homepage */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Header Styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        #logo {
+            width: 100px;
+        }
+
+        #connectWallet {
+            background-color: #ff9900;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        #hero {
+            position: relative;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        #hero h1 {
+            font-size: 3rem;
+            margin: 0;
+        }
+
+        #hero p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        #buyNow {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: #ff9900;
+            border: none;
+            color: #000;
+            cursor: pointer;
+        }
+
+        /* Canvas for Animated Particles */
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* About Section */
+        #about {
+            padding: 50px 20px;
+            text-align: center;
+            background: #111;
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <img src="cryptopin-logo.png" alt="CryptoPin Logo" id="logo">
+        <button id="connectWallet">Connect Wallet</button>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <h1>CryptoPin Token</h1>
+        <p>Engage in the crypto world with secure and innovative interactions.</p>
+        <button id="buyNow">Buy Now</button>
+        <canvas id="particleCanvas"></canvas>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2>About CryptoPin</h2>
+        <p>CryptoPin is designed to connect crypto enthusiasts worldwide through a social platform where users can post, chat, and engage securely.</p>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 CryptoPin Token. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Particle Animation using p5.js
+        let canvas;
+        function setup() {
+            canvas = createCanvas(windowWidth, windowHeight);
+            canvas.position(0, 0);
+            canvas.style('z-index', '-1');
+            background(0);
+        }
+
+        function draw() {
+            clear();
+            fill(255, 150);
+            noStroke();
+            for (let i = 0; i < 50; i++) {
+                let x = random(width);
+                let y = random(height);
+                let size = random(3, 10);
+                ellipse(x, y, size, size);
+            }
+        }
+
+        // Connect Wallet Button Action
+        document.getElementById('connectWallet').onclick = function() {
+            alert('Wallet Connection Coming Soon!');
+        }
+
+        // Buy Now Button Action
+        document.getElementById('buyNow').onclick = function() {
+            alert('Token Sale Coming Soon!');
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</body>
+</html>
