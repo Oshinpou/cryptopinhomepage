@@ -22,6 +22,8 @@
             align-items: center;
             padding: 20px;
             background: rgba(0, 0, 0, 0.8);
+            position: relative;
+            z-index: 10;
         }
 
         #logo {
@@ -45,6 +47,7 @@
             right: 0;
             top: 60px;
             width: 200px;
+            z-index: 10;
         }
 
         #burgerMenu a {
@@ -64,6 +67,7 @@
             text-align: center;
             padding: 100px 20px;
             position: relative;
+            z-index: 10;
         }
 
         #hero h1 {
@@ -89,7 +93,9 @@
         #about, .description {
             padding: 50px 20px;
             text-align: center;
-            background: #111;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+            z-index: 10;
         }
 
         .description {
@@ -112,10 +118,26 @@
             text-align: center;
             padding: 10px;
             background-color: #000;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Background Canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
+
+    <!-- Background Animation Canvas -->
+    <canvas id="bgCanvas"></canvas>
+
     <!-- Header Section -->
     <header>
         <img src="cryptopin-logo.png" alt="CryptoPin Logo" id="logo">
@@ -205,7 +227,80 @@
         // Buy Now Button Action - Redirect to buynow.html
         document.getElementById('buyNow').onclick = function () {
             window.location.href = 'buynow.html';
+        };
+
+        // Background Animation using Three.js
+        const canvas = document.querySelector('#bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        // Create Particle
+        class Particle {
+            constructor(x, y, size, color, speedX, speedY) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.speedX = speedX;
+                this.speedY = speedY;
+            }
+
+            // Draw Particle
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            // Move Particle
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.2) this.size -= 0.02;
+                if (this.size <= 0.2) this.size = 0;
+
+                this.draw();
+            }
         }
+
+        // Create Particle Array
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < 100; i++) {
+                const size = Math.random() * 3 + 1;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 2;
+                const speedY = (Math.random() - 0.5) * 2;
+                const color = '#ff9900';
+                particlesArray.push(new Particle(x, y, size, color, speedX, speedY));
+            }
+        }
+
+        // Animate Particles
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        // Resize Canvas on Window Resize
+        window.addEventListener('resize', function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
     </script>
 </body>
 </html>
