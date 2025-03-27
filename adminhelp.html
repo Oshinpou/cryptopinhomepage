@@ -1,135 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Admin Help Panel - CryptoPin</title>
     <style>
-        body, html {
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-            overflow-x: hidden;
-            overflow-y: auto;
-            height: 100%;
-        }
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
         }
         .container {
-            position: relative;
-            z-index: 1;
-            padding: 50px 20px;
-            max-width: 900px;
+            width: 80%;
             margin: 50px auto;
             background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         h1 {
             text-align: center;
-            color: #fff;
+        }
+        #helpRequests {
+            margin-top: 20px;
         }
         .help-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: #333;
             padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            color: #fff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         button {
-            background: #ff4c4c;
+            background: #ff4b2b;
             color: #fff;
-            padding: 8px 15px;
             border: none;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
-            background: #e60000;
+            background: #ff6b4b;
         }
     </style>
 </head>
 <body>
 
-    <div id="particles-js"></div>
+<div class="container">
+    <h1>Admin Help Requests</h1>
+    <div id="helpRequests"></div>
+</div>
 
-    <div class="container">
-        <h1>Admin Help Panel</h1>
-        <div id="helpRequests"></div>
-    </div>
+<script>
+    // Load help requests from local storage
+    function loadHelpRequests() {
+        const helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
+        const helpRequestsContainer = document.getElementById('helpRequests');
+        helpRequestsContainer.innerHTML = '';
 
-    <!-- Particle.js Background Animation -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+        if (helpRequests.length === 0) {
+            helpRequestsContainer.innerHTML = '<p style="color: #ccc; text-align: center;">No help requests found.</p>';
+            return;
+        }
 
-    <script>
-        particlesJS('particles-js', {
-            "particles": {
-                "number": {
-                    "value": 100,
-                    "density": { "enable": true, "value_area": 800 }
-                },
-                "color": { "value": "#ffffff" },
-                "shape": {
-                    "type": "circle",
-                    "stroke": { "width": 0, "color": "#000000" }
-                },
-                "opacity": {
-                    "value": 0.5,
-                    "random": false
-                },
-                "size": {
-                    "value": 3,
-                    "random": true
-                },
-                "line_linked": {
-                    "enable": true,
-                    "distance": 150,
-                    "color": "#ffffff",
-                    "opacity": 0.4,
-                    "width": 1
-                },
-                "move": {
-                    "enable": true,
-                    "speed": 5
-                }
-            }
+        helpRequests.forEach((request, index) => {
+            helpRequestsContainer.innerHTML += `
+                <div class="help-item">
+                    <p><strong>Name:</strong> ${request.name}</p>
+                    <p><strong>Email:</strong> ${request.email}</p>
+                    <p><strong>Message:</strong> ${request.message}</p>
+                    <button onclick="processHelp(${index})">Process</button>
+                </div>
+            `;
         });
+    }
 
-        // Load help requests from local storage
-        function loadHelpRequests() {
-            const helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
-            const helpRequestsContainer = document.getElementById('helpRequests');
-            helpRequestsContainer.innerHTML = '';
+    // Process and delete help request
+    function processHelp(index) {
+        let helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
+        helpRequests.splice(index, 1); // Remove request after processing
+        localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
+        loadHelpRequests(); // Reload requests
+    }
 
-            if (helpRequests.length === 0) {
-                helpRequestsContainer.innerHTML = '<p style="color: #ccc; text-align: center;">No help requests found.</p>';
-                return;
-            }
+    window.onload = loadHelpRequests;
+</script>
 
-            helpRequests.forEach((request, index) => {
-                helpRequestsContainer.innerHTML += `
-                    <div class="help-item">
-                        <p><strong>Name:</strong> ${request.name}</p>
-                        <p><strong>Email:</strong> ${request.email}</p>
-                        <p><strong>Message:</strong> ${request.message}</p>
-                        <p><strong>Status:</strong> ${request.status}</p>
-                        <button onclick="processHelp(${index})">Process</button>
-                    </div>
-                `;
-            });
-        }
-
-        // Process help request
-        function processHelp(index) {
-            let helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
-            helpRequests[index].status = 'Processed';
-            localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
-            loadHelpRequests();
-        }
-
-        window.onload = loadHelpRequests;
-    </script>
 </body>
 </html>
