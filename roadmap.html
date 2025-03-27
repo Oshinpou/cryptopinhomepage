@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #000428, #004e92);
+            overflow: hidden;
+        }
+        .roadmap-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 50px 20px;
+            color: #fff;
+        }
+        .title {
+            font-size: 40px;
+            margin-bottom: 30px;
+        }
+        .timeline {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            width: 300px;
+            border-radius: 15px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .timeline-card:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="roadmap-container">
+        <h1 class="title">CryptoPin Finance Roadmap</h1>
+        <div class="timeline">
+            <div class="timeline-card" id="q1">
+                <h2>Q1 2025 – Platform Launch</h2>
+                <p>Launch secure transactions, NFT trading, and staking features.</p>
+            </div>
+            <div class="timeline-card" id="q2">
+                <h2>Q2 2025 – Multi-Network Integration</h2>
+                <p>Expand to Ethereum, BSC, and Polygon with cross-chain compatibility.</p>
+            </div>
+            <div class="timeline-card" id="q3">
+                <h2>Q3 2025 – NFT Marketplace and AI Curation</h2>
+                <p>Launch NFT marketplace and introduce AI content curation.</p>
+            </div>
+            <div class="timeline-card" id="q4">
+                <h2>Q4 2025 – Web 3.0 Expansion and Governance</h2>
+                <p>Enable Web 3.0 dApps and implement decentralized governance.</p>
+            </div>
+            <div class="timeline-card" id="q5">
+                <h2>Q1 2026 – Yield Farming and Enhanced Security</h2>
+                <p>Introduce optimized yield farming and improve wallet security.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        class Particle {
+            constructor(x, y, size, speedX, speedY) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.speedX = speedX;
+                this.speedY = speedY;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function createParticles(e) {
+            for (let i = 0; i < 5; i++) {
+                particles.push(new Particle(
+                    e.x,
+                    e.y,
+                    Math.random() * 5 + 1,
+                    Math.random() * 3 - 1.5,
+                    Math.random() * 3 - 1.5
+                ));
+            }
+        }
+
+        function handleParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].size <= 0.3) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleParticles();
+            requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('mousemove', createParticles);
+        animate();
+    </script>
+</body>
+</html>
