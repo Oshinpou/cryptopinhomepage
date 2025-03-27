@@ -7,13 +7,7 @@
             padding: 0;
             overflow: hidden;
             font-family: 'Arial', sans-serif;
-        }
-        .background {
-            position: absolute;
-            width: 100%;
-            height: 100%;
             background: linear-gradient(to bottom, #000428, #004e92);
-            overflow: hidden;
         }
         .roadmap-container {
             position: relative;
@@ -51,102 +45,110 @@
         p {
             font-size: 16px;
         }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #000428, #004e92);
+            z-index: 0;
+        }
     </style>
 </head>
 <body>
-    <div class="background">
-        <canvas id="canvas"></canvas>
-    </div>
+
+    <div id="particles-js"></div>
+
     <div class="roadmap-container">
         <h1 class="title">CryptoPin Finance Roadmap</h1>
         <div class="timeline">
-            <div class="timeline-card" id="q1">
+            <div class="timeline-card">
                 <h2>Q1 2025 – Platform Launch</h2>
                 <p>Launch secure transactions, NFT trading, and staking features.</p>
             </div>
-            <div class="timeline-card" id="q2">
+            <div class="timeline-card">
                 <h2>Q2 2025 – Multi-Network Integration</h2>
                 <p>Expand to Ethereum, BSC, and Polygon with cross-chain compatibility.</p>
             </div>
-            <div class="timeline-card" id="q3">
+            <div class="timeline-card">
                 <h2>Q3 2025 – NFT Marketplace and AI Curation</h2>
                 <p>Launch NFT marketplace and introduce AI content curation.</p>
             </div>
-            <div class="timeline-card" id="q4">
+            <div class="timeline-card">
                 <h2>Q4 2025 – Web 3.0 Expansion and Governance</h2>
                 <p>Enable Web 3.0 dApps and implement decentralized governance.</p>
             </div>
-            <div class="timeline-card" id="q5">
+            <div class="timeline-card">
                 <h2>Q1 2026 – Yield Farming and Enhanced Security</h2>
                 <p>Introduce optimized yield farming and improve wallet security.</p>
             </div>
         </div>
     </div>
 
+    <!-- Particle.js Library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let particles = [];
-
-        class Particle {
-            constructor(x, y, size, speedX, speedY) {
-                this.x = x;
-                this.y = y;
-                this.size = size;
-                this.speedX = speedX;
-                this.speedY = speedY;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                if (this.size > 0.2) this.size -= 0.1;
-            }
-
-            draw() {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function createParticles(e) {
-            for (let i = 0; i < 5; i++) {
-                particles.push(new Particle(
-                    e.x,
-                    e.y,
-                    Math.random() * 5 + 1,
-                    Math.random() * 3 - 1.5,
-                    Math.random() * 3 - 1.5
-                ));
-            }
-        }
-
-        function handleParticles() {
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-                if (particles[i].size <= 0.3) {
-                    particles.splice(i, 1);
-                    i--;
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": { "value": "#ffffff" },
+                "shape": {
+                    "type": "circle",
+                    "stroke": { "width": 0, "color": "#000000" },
+                    "polygon": { "nb_sides": 5 }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 }
                 }
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            handleParticles();
-            requestAnimationFrame(animate);
-        }
-
-        canvas.addEventListener('mousemove', createParticles);
-        animate();
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "repulse" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 400, "line_linked": { "opacity": 1 } },
+                    "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 },
+                    "repulse": { "distance": 200, "duration": 0.4 },
+                    "push": { "particles_nb": 4 },
+                    "remove": { "particles_nb": 2 }
+                }
+            },
+            "retina_detect": true
+        });
     </script>
+
 </body>
 </html>
