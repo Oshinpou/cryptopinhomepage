@@ -46,11 +46,21 @@
             background: #D4AF37;
             color: #000;
         }
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #D4AF37;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Admin Panel - Manage User Data</h2>
+
+        <h3>Search Users</h3>
+        <input type="text" id="searchUser" placeholder="Search by Username" onkeyup="searchUser()">
 
         <h3>User List</h3>
         <table id="userTable">
@@ -133,6 +143,26 @@
             requests.splice(index, 1);
             localStorage.setItem('requests', JSON.stringify(requests));
             loadRequests();
+        }
+
+        function searchUser() {
+            const searchValue = document.getElementById('searchUser').value.toLowerCase();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userTable = document.querySelector('#userTable tbody');
+            userTable.innerHTML = '';
+
+            users
+                .filter(user => user.username.toLowerCase().includes(searchValue))
+                .forEach((user, index) => {
+                    userTable.innerHTML += `
+                        <tr>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.password}</td>
+                            <td><button onclick="deleteUser(${index})">Delete</button></td>
+                        </tr>
+                    `;
+                });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
