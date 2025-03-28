@@ -1,16 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .dashboard-container {
+            text-align: center;
+            margin-top: 15%;
+            color: #fff;
+        }
+        button {
+            background-color: #D4AF37;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #b7952c;
+        }
+    </style>
 </head>
 <body>
-    <div id="particles-js"></div>
+    <canvas id="particleCanvas"></canvas>
     <div class="dashboard-container">
         <h2>Welcome, <span id="usernameDisplay"></span></h2>
         <button onclick="logout()">Logout</button>
+        <button onclick="redirectToSignupLogin()">SignUp/Login</button>
     </div>
-    <script src="particles.js"></script>
-    <script src="dashboard.js"></script>
+    
+    <script>
+        // Particle Animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        for (let i = 0; i < 100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 3,
+                dx: Math.random() - 0.5,
+                dy: Math.random() - 0.5
+            });
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#D4AF37';
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        // Display Username
+        const user = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (user && user.username) {
+            document.getElementById('usernameDisplay').innerText = user.username;
+        } else {
+            window.location.href = 'signuplogin.html';
+        }
+
+        // Logout Function
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'signuplogin.html';
+        }
+
+        // Redirect to SignUp/Login
+        function redirectToSignupLogin() {
+            window.location.href = 'signuplogin.html';
+        }
+    </script>
 </body>
 </html>
