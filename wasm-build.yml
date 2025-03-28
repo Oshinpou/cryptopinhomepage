@@ -1,0 +1,35 @@
+name: Build WASM
+
+on:
+  push:
+    paths:
+      - "wasm/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+          default: true
+
+      - name: Install wasm-pack
+        run: |
+          curl -sSL https://rustwasm.github.io/wasm-pack/installer/init.sh | sh
+
+      - name: Build WASM
+        run: |
+          cd wasm
+          wasm-pack build --target web --release
+
+      - name: Upload wasm_code.wasm
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm_code
+          path: wasm/pkg/
