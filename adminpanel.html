@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - CryptoPin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            padding: 20px;
+            background: rgba(34, 34, 34, 0.95);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #D4AF37;
+        }
+        button {
+            background-color: #D4AF37;
+            color: #000;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #b7952c;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #D4AF37;
+        }
+        th {
+            background: #D4AF37;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Panel - Manage User Data</h2>
+
+        <h3>User List</h3>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>Account Requests</h3>
+        <table id="requestTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        function loadUserData() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userTable = document.querySelector('#userTable tbody');
+            userTable.innerHTML = '';
+
+            users.forEach((user, index) => {
+                userTable.innerHTML += `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.password}</td>
+                        <td><button onclick="deleteUser(${index})">Delete</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadRequests() {
+            const requests = JSON.parse(localStorage.getItem('requests')) || [];
+            const requestTable = document.querySelector('#requestTable tbody');
+            requestTable.innerHTML = '';
+
+            requests.forEach((req, index) => {
+                requestTable.innerHTML += `
+                    <tr>
+                        <td>${req.username}</td>
+                        <td>${req.email}</td>
+                        <td>${req.type}</td>
+                        <td><button onclick="processRequest(${index})">Process</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteUser(index) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users.splice(index, 1);
+            localStorage.setItem('users', JSON.stringify(users));
+            loadUserData();
+        }
+
+        function processRequest(index) {
+            let requests = JSON.parse(localStorage.getItem('requests')) || [];
+            const req = requests[index];
+
+            if (req.type === 'delete') {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                users = users.filter(u => u.username !== req.username);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            requests.splice(index, 1);
+            localStorage.setItem('requests', JSON.stringify(requests));
+            loadRequests();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            loadRequests();
+        });
+    </script>
+</body>
+</html>
