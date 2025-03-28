@@ -1,27 +1,201 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Sign Up / Login</title>
+    <title>Sign Up / Login - CryptoPin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .form-container {
+            background: rgba(34, 34, 34, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            width: 350px;
+            margin: 10% auto;
+            text-align: center;
+            color: #fff;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background-color: #D4AF37;
+            color: #000;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #b7952c;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #D4AF37;
+            border-radius: 5px;
+        }
+        .tab.active {
+            background: #b7952c;
+        }
+        .error-msg {
+            color: #ff4d4d;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div id="particles-js"></div>
+
     <div class="form-container">
-        <h2>Sign Up / Login</h2>
-        <form id="signupForm">
-            <input type="text" id="signupUsername" placeholder="Username" required>
-            <input type="password" id="signupPassword" placeholder="Password" required>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('signup')">Sign Up</div>
+            <div class="tab" onclick="showTab('login')">Login</div>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signupForm">
+            <h3>Sign Up</h3>
+            <input type="text" id="signupUsername" placeholder="Enter Username" required>
+            <input type="email" id="signupEmail" placeholder="Enter Email" required>
+            <input type="password" id="signupPassword" placeholder="Enter Password" required>
             <button type="button" onclick="signUp()">Sign Up</button>
-        </form>
-        <form id="loginForm">
-            <input type="text" id="loginUsername" placeholder="Username" required>
-            <input type="password" id="loginPassword" placeholder="Password" required>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" style="display: none;">
+            <h3>Login</h3>
+            <input type="text" id="loginUsername" placeholder="Enter Username" required>
+            <input type="password" id="loginPassword" placeholder="Enter Password" required>
             <button type="button" onclick="login()">Login</button>
-        </form>
-        <button onclick="recoverPassword()">Forgot Password?</button>
-        <button onclick="deleteAccount()">Delete Account</button>
+            <button type="button" onclick="forgotPassword()">Forgot Password</button>
+            <button type="button" onclick="deleteAccountRequest()">Delete Account</button>
+        </div>
+
+        <div id="error" class="error-msg"></div>
     </div>
-    <script src="particles.js"></script>
-    <script src="app.js"></script>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function showTab(tab) {
+            document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+            document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add('active');
+        }
+
+        function signUp() {
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+
+            if (!username || !email || !password) {
+                alert('⚠️ All fields are required!');
+                return;
+            }
+
+            if (users.find(user => user.username === username)) {
+                alert('⚠️ Username already exists.');
+                return;
+            }
+
+            users.push({ username, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('✅ Sign Up Successful! Please log in.');
+            showTab('login');
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (!user) {
+                document.getElementById("error").innerText = "❌ Invalid username or password.";
+                return;
+            }
+
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            window.location.href = "dashboard.html";
+        }
+
+        function forgotPassword() {
+            const username = prompt('Enter your username:');
+            const email = prompt('Enter your email:');
+            const request = { username, email, type: 'recover' };
+            processRequest(request);
+        }
+
+        function deleteAccountRequest() {
+            const username = prompt('Enter your username:');
+            const email = prompt('Enter your email:');
+            const password = prompt('Enter your password:');
+            const request = { username, email, password, type: 'delete' };
+            processRequest(request);
+        }
+
+        function processRequest(request) {
+            let requests = JSON.parse(localStorage.getItem('requests')) || [];
+            requests.push(request);
+            localStorage.setItem('requests', JSON.stringify(requests));
+            alert('✅ Request submitted successfully!');
+        }
+    </script>
+
+    <script>
+        // Particle Animation
+        const canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        for (let i = 0; i < 100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 3,
+                dx: Math.random() - 0.5,
+                dy: Math.random() - 0.5
+            });
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#D4AF37';
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+    </script>
 </body>
 </html>
