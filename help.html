@@ -83,23 +83,14 @@
     <script>
         particlesJS('particles-js', {
             "particles": {
-                "number": {
-                    "value": 100,
-                    "density": { "enable": true, "value_area": 800 }
-                },
+                "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
                 "color": { "value": "#ffffff" },
                 "shape": {
                     "type": "circle",
                     "stroke": { "width": 0, "color": "#000000" }
                 },
-                "opacity": {
-                    "value": 0.5,
-                    "random": false
-                },
-                "size": {
-                    "value": 3,
-                    "random": true
-                },
+                "opacity": { "value": 0.5, "random": false },
+                "size": { "value": 3, "random": true },
                 "line_linked": {
                     "enable": true,
                     "distance": 150,
@@ -107,27 +98,27 @@
                     "opacity": 0.4,
                     "width": 1
                 },
-                "move": {
-                    "enable": true,
-                    "speed": 5
-                }
+                "move": { "enable": true, "speed": 5 }
             }
         });
 
-        // Store help requests to Local Storage
+        // Submit help request to server
         function submitHelp() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const message = document.getElementById('message').value;
 
-            const helpRequest = { name, email, message, status: 'Pending' };
-
-            let helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
-            helpRequests.push(helpRequest);
-            localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
-
-            alert('Help request submitted successfully!');
-            document.getElementById('helpForm').reset();
+            fetch('help.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('helpForm').reset();
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
