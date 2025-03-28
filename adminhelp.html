@@ -1,90 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Help Panel - CryptoPin</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+            background-color: #1b2838;
             color: #fff;
-            margin: 0;
-            padding: 0;
         }
         .container {
-            width: 80%;
+            max-width: 900px;
             margin: 50px auto;
-            background: rgba(0, 0, 0, 0.8);
+            background: #2c3e50;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         h1 {
             text-align: center;
+            margin-bottom: 20px;
         }
-        #helpRequests {
-            margin-top: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .help-item {
-            background: #333;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        th, td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        th {
+            background: #34495e;
         }
         button {
-            background: #ff4b2b;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 8px 12px;
             cursor: pointer;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
         button:hover {
-            background: #ff6b4b;
+            background-color: #c0392b;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Admin Help Requests</h1>
-    <div id="helpRequests"></div>
-</div>
+    <div class="container">
+        <h1>Manage Help Requests</h1>
+        <table id="helpTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="helpData"></tbody>
+        </table>
+    </div>
 
-<script>
-    // Load help requests from local storage
-    function loadHelpRequests() {
-        const helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
-        const helpRequestsContainer = document.getElementById('helpRequests');
-        helpRequestsContainer.innerHTML = '';
-
-        if (helpRequests.length === 0) {
-            helpRequestsContainer.innerHTML = '<p style="color: #ccc; text-align: center;">No help requests found.</p>';
-            return;
+    <script>
+        // Fetch help requests
+        function fetchHelpRequests() {
+            fetch('adminhelp.php')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('helpData');
+                    tableBody.innerHTML = '';
+                    data.forEach(item => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${item.id}</td>
+                                <td>${item.name}</td>
+                                <td>${item.email}</td>
+                                <td>${item.message}</td>
+                                <td>${item.status}</td>
+                                <td>
+                                    <button onclick="deleteRequest(${item.id})">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
         }
 
-        helpRequests.forEach((request, index) => {
-            helpRequestsContainer.innerHTML += `
-                <div class="help-item">
-                    <p><strong>Name:</strong> ${request.name}</p>
-                    <p><strong>Email:</strong> ${request.email}</p>
-                    <p><strong>Message:</strong> ${request.message}</p>
-                    <button onclick="processHelp(${index})">Process</button>
-                </div>
-            `;
-        });
-    }
+        // Delete request
+        function deleteRequest(id) {
+            fetch(`adminhelp.php?id=${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    fetchHelpRequests();
+                });
+        }
 
-    // Process and delete help request
-    function processHelp(index) {
-        let helpRequests = JSON.parse(localStorage.getItem('helpRequests')) || [];
-        helpRequests.splice(index, 1); // Remove request after processing
-        localStorage.setItem('helpRequests', JSON.stringify(helpRequests));
-        loadHelpRequests(); // Reload requests
-    }
-
-    window.onload = loadHelpRequests;
-</script>
-
+        // Fetch data when page loads
+        document.addEventListener('DOMContentLoaded', fetchHelpRequests);
+    </script>
 </body>
 </html>
