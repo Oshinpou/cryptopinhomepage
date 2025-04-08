@@ -1,21 +1,23 @@
 <?php
-// Database connection
-$host = 'localhost';
-$dbname = 'cryptopin';
-$user = 'root';
-$pass = '';
+header('Content-Type: application/json');
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+// DB connection
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbname = 'cryptopin';
+$conn = new mysqli($host, $user, $password, $dbname);
 
 if ($conn->connect_error) {
-    die(json_encode(['message' => 'Database connection failed.']));
+    http_response_code(500);
+    echo json_encode(['message' => 'Database connection failed']);
+    exit();
 }
 
-// Handle GET request to fetch data
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $result = $conn->query("SELECT * FROM help_requests ORDER BY id DESC");
-    $data = [];
+    $result = $conn->query("SELECT id, name, email, message, status FROM help_requests ORDER BY id DESC");
 
+    $data = [];
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;
     }
@@ -24,25 +26,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     exit();
 }
 
-// Handle POST request to delete record
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['action']) && $data['action'] === 'delete' && isset($data['id'])) {
-        $id = intval($data['id']);
+    if (isset($input['id']) && $input['action'] === 'delete') {
+        $id = intval($input['id']);
         $stmt = $conn->prepare("DELETE FROM help_requests WHERE id = ?");
-        $stmt->bind_param('i', $id);
+        $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {
-            echo json_encode(['message' => 'Request deleted successfully!']);
+            echo json_encode(['message' => 'Request deleted successfully.']);
         } else {
+            http_response_code(500);
             echo json_encode(['message' => 'Failed to delete request.']);
         }
+
         $stmt->close();
+        exit();
     } else {
+        http_response_code(400);
         echo json_encode(['message' => 'Invalid request.']);
+        exit();
     }
 }
 
-$conn->close();
+// Invalid method
+http_response_code(405);
+echo json_encode(['message' => 'Method not allowed.']);
+exit();
 ?>
