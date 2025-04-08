@@ -63,18 +63,19 @@
 
     <div class="container">
         <h1>Contact CryptoPin Help Desk</h1>
-        <form id="helpForm" onsubmit="submitHelp(event)">
-            <label for="name">Enter Name</label>
-            <input type="text" id="name" name="name" required>
+        
+            <form id="helpForm" onsubmit="submitHelp(event)">
+    <label for="name">Enter Name</label>
+    <input type="text" id="name" name="name" required>
 
-            <label for="email">Enter Email</label>
-            <input type="email" id="email" name="email" required>
+    <label for="email">Enter Email</label>
+    <input type="email" id="email" name="email" required>
 
-            <label for="message">Enter Message</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
+    <label for="message">Enter Message</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
 
-            <button type="submit">Submit</button>
-        </form>
+    <button type="submit">Submit</button>
+</form>
     </div>
 
     <!-- Particle.js Background Animation -->
@@ -104,25 +105,32 @@
         });
 
         // Submit help request to server
-        function submitHelp(event) {
-            event.preventDefault(); // Prevent default form submission
+        
+            function submitHelp(event) {
+    event.preventDefault();
 
-            const formData = new FormData(document.getElementById('helpForm'));
+    const form = document.getElementById('helpForm');
+    const formData = new FormData(form);
 
-            fetch('submit_help.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data); // Show server response
-                document.getElementById('helpForm').reset(); // Reset form after submission
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error submitting help request. Please try again.');
-            });
+    fetch('submit_help.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
         }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.message);
+        form.reset(); // Clear form after successful submit
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit help request. Please try again.');
+    });
+}
     </script>
 </body>
 </html>
