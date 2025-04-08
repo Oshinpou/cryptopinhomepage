@@ -62,21 +62,21 @@
     <div id="particles-js"></div>
 
     <div class="container">
-        <h1>Contact CryptoPin Help Desk</h1>
-        
-            <form id="helpForm" onsubmit="submitHelp(event)">
-    <label for="name">Enter Name</label>
-    <input type="text" id="name" name="name" required>
+    <h1>Contact CryptoPin Help Desk</h1>
+    <form id="helpForm">
+        <label for="name">Enter Name</label>
+        <input type="text" id="name" name="name" required>
 
-    <label for="email">Enter Email</label>
-    <input type="email" id="email" name="email" required>
+        <label for="email">Enter Email</label>
+        <input type="email" id="email" name="email" required>
 
-    <label for="message">Enter Message</label>
-    <textarea id="message" name="message" rows="5" required></textarea>
+        <label for="message">Enter Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
 
-    <button type="submit">Submit</button>
-</form>
-    </div>
+        <button type="submit">Submit</button>
+    </form>
+    <p id="responseMsg" style="margin-top: 10px;"></p>
+</div>
 
     <!-- Particle.js Background Animation -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -109,28 +109,33 @@
             function submitHelp(event) {
     event.preventDefault();
 
-    const form = document.getElementById('helpForm');
-    const formData = new FormData(form);
+    const form = document.getElementById('helpForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
 
     fetch('submit_help.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok.');
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        alert(data.message);
-        form.reset(); // Clear form after successful submit
+        const msg = document.getElementById('responseMsg');
+        msg.innerText = data.message;
+        msg.style.color = data.message.includes('success') ? 'lightgreen' : 'orange';
+        if (data.message.includes('success')) {
+            document.getElementById('helpForm').reset();
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Failed to submit help request. Please try again.');
+        document.getElementById('responseMsg').innerText = 'Failed to submit help request. Please try again.';
+        document.getElementById('responseMsg').style.color = 'red';
     });
-}
+});
+
+    
+  
     </script>
 </body>
 </html>
