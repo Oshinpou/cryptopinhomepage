@@ -43,6 +43,10 @@
       <div id="allTransactions"></div>
       <button onclick="adminLogout()">Logout</button>
     </div>
+<h2>All Transactions</h2>
+<div id="transactions"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
 
 </div>
   <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
@@ -110,7 +114,30 @@
 
   renderUsers();
   renderPurchases();
-</script>
+
+  const remoteTransactions = new PouchDB('https://admin:password@your-couchdb-domain.com/transactions_db');
+
+  remoteTransactions.allDocs({ include_docs: true }).then(result => {
+    const display = result.rows.map(row => {
+      const d = row.doc;
+      return `
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+          <b>User:</b> ${d.username} <br>
+          <b>Email:</b> ${d.email} <br>
+          <b>BNB:</b> ${d.bnbAmount} <br>
+          <b>Tokens:</b> ${d.tokens} <br>
+          <b>Wallet:</b> ${d.cryptopinWallet} <br>
+          <b>Tx Hash:</b> ${d.txHash} <br>
+          <b>Time:</b> ${d.time}
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("transactions").innerHTML = display;
+  }).catch(err => console.error("Error loading data:", err));
+
+  
+  </script>
 
 </body>
 </html>
