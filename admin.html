@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pouchdb-find/dist/pouchdb.find.min.js"></script>
   <style>
     body { font-family: sans-serif; background: #f3f3f3; padding: 20px; }
     .admin-box { background: white; padding: 20px; border-radius: 12px; max-width: 1000px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -137,6 +139,42 @@
   }).catch(err => console.error("Error loading data:", err));
 
   
+  const userDB = new PouchDB('users_db');
+  const tokenDB = new PouchDB('token_purchases');
+
+  PouchDB.plugin(pouchdbFind);
+
+  function loadUsers() {
+    userDB.allDocs({ include_docs: true }).then(result => {
+      const container = document.getElementById("usersList");
+      container.innerHTML = '';
+      result.rows.forEach(row => {
+        const user = row.doc;
+        const userDiv = document.createElement("div");
+        userDiv.style = "border:1px solid #aaa; padding:10px; margin:10px;";
+        userDiv.innerHTML = `
+          <strong>${user.username}</strong> | ${user.email}<br>
+          <em>Created: ${new Date(user.createdAt).toLocaleString()}</em><br>
+          <div id="tokens_${user._id}">Loading token data...</div>
+        `;
+        container.appendChild(userDiv);
+
+        // Fetch token purchases
+        tokenDB.createIndex({ index: { fields: ['email'] } }).then(() => {
+          return tokenDB.find({ selector: { email: user.email } });
+        }).then(res => {
+          const tokensHTML = res.docs.map(t => 
+            `- ${t.amountBNB} BNB = ${t.tokens} CryptoPin on ${new Date(t.date).toLocaleString()}`
+          ).join("<br>");
+          document.getElementById(`tokens_${user._id}`).innerHTML = tokensHTML || 'No purchases.';
+        });
+      });
+    });
+  }
+
+  // Call it
+  loadUsers();
+
   </script>
 
 </body>
