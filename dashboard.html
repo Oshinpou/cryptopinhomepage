@@ -80,8 +80,9 @@ button {
 <body>
 
 <div class="container">
-  <h2>Welcome, <span id="user-name"></span></h2>
-  <p>Email: <span id="user-email"></span></p>
+<h2>Welcome, <span id="userName"></span>!</h2>
+<p>Email: <span id="userEmail"></span></p>
+<button onclick="logout()">Logout</button>
 
   <label>CryptoPin Wallet Address:</label>
   <input type="text" id="wallet-address" class="wallet-input" placeholder="Enter your wallet address" onchange="updateWallet()">
@@ -200,6 +201,24 @@ button {
       <p>Send <strong>${bnbToSend} BNB</strong> to purchase <strong>${tokens}</strong> CryptoPin tokens.</p>
     `;
   }
+  
+  
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) {
+    // No user found, redirect to login
+    window.location.href = "login.html";
+  } else {
+    // Display user info
+    document.getElementById("userName").textContent = user.username;
+    document.getElementById("userEmail").textContent = user.email;
+  }
+
+  function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+  }
+
   
   </script>
 
