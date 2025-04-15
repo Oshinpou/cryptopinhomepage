@@ -16,6 +16,6 @@ function resetPassword(username, email, newPass) { if (!username || !email || !n
 
 function deleteAccount(username, email, password) { if (!username || !email || !password) return showError('All fields required.'); db.get(email).then(doc => { if (doc.username !== username || doc.password !== password) return showError('Incorrect credentials.'); return db.remove(doc); }).then(() => { gun.get('users').get(username).put(null); showMessage('Account deleted.'); }).catch(err => { showError('Deletion failed: ' + err.message); }); }
 
-// Auto redirect if already logged in if (sessionStorage.getItem('loggedInUser')) { window.location.href = 'home.html'; // adjust as needed }
+// Auto redirect if already logged in if (sessionStorage.getItem('loggedInUser')) { window.location.href = 'dashboard.html'; // adjust as needed }
 
                                                                                                                                                           
