@@ -1,6 +1,77 @@
 const DB_NAME = "globalDB";
 const STORE_NAME = "pageData";
 let db;
+const db = new PouchDB('users');
+const transactionDB = new PouchDB('transactions');
+
+// Admin Login
+function adminLogin() {
+    const adminEmail = document.getElementById('adminEmail').value;
+    const adminPassword = document.getElementById('adminPassword').value;
+
+    if (adminEmail === 'admin@cryptopin.com' && adminPassword === 'admin123') {
+        Toastify({
+            text: "Admin Login Successful!",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "green",
+        }).showToast();
+        document.getElementById('adminLoginBox').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadUsers();
+        loadTransactions();
+    } else {
+        showError('Invalid admin credentials');
+    }
+}
+
+// Load Users
+function loadUsers() {
+    db.allDocs({ include_docs: true }).then(function(result) {
+        const userList = result.rows.map(row => row.doc);
+        let userHTML = '';
+        userList.forEach(function(user) {
+            userHTML += `<div>${user.username} - ${user.email}</div>`;
+        });
+        document.getElementById('userList').innerHTML = userHTML;
+    }).catch(function(err) {
+        showError('Error loading users');
+    });
+}
+
+// Load Transactions
+function loadTransactions() {
+    transactionDB.allDocs({ include_docs: true }).then(function(result) {
+        const transactions = result.rows.map(row => row.doc);
+        let transactionsHTML = '';
+        transactions.forEach(function(transaction) {
+            transactionsHTML += `<div>User: ${transaction.user} - Amount: ${transaction.amount} BNB</div>`;
+        });
+        document.getElementById('allTransactions').innerHTML = transactionsHTML;
+    }).catch(function(err) {
+        showError('Error loading transactions');
+    });
+}
+
+// Admin Logout
+function adminLogout() {
+    document.getElementById('adminLoginBox').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
+}
+
+function showError(message) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "red",
+    }).showToast();
+}
+
 
 // Initialize Database
 function initDB() {
@@ -53,3 +124,5 @@ function viewAllData() {
 
 // Initialize Database on Page Load
 initDB();
+
+
