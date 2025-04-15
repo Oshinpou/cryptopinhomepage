@@ -37,7 +37,16 @@
   <button class="logout" onclick="logout()">Logout</button>
 </div>
 
-<script>
+<h3>Buy CryptoPin Tokens</h3>
+<label>Enter Token Amount:</label>
+<input type="number" id="tokenAmount" placeholder="e.g., 100000">
+<button onclick="generateQRCode()">Generate QR Code</button>
+<div id="qrOutput"></div>
+<div id="qrMessage"></div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+ 
+  
+  <script>
   const db = new PouchDB('users');
   const purchaseDB = new PouchDB('token_purchases');
   const remoteUsers = 'https://your-couchdb-url.com/users';
@@ -93,7 +102,31 @@
   }
 
   loadPurchases();
-</script>
+
+
+  const bnbWallet = "0xYourBNBReceiverAddress"; // same for all
+  const rate = 100000; // 1 BNB = 100k tokens
+
+  function generateQRCode() {
+    const tokens = parseInt(document.getElementById("tokenAmount").value);
+    if (!tokens || tokens <= 0) return alert("Enter valid amount");
+
+    const bnbToSend = (tokens / rate).toFixed(6);
+    const message = `Buying ${tokens} CryptoPin tokens`;
+
+    const paymentUrl = `ethereum:${bnbWallet}?value=${bnbToSend}&message=${encodeURIComponent(message)}`;
+
+    QRCode.toCanvas(document.getElementById('qrCanvas'), paymentUrl, function (error) {
+      if (error) console.error(error);
+    });
+
+    document.getElementById("qrOutput").innerHTML = `
+      <canvas id="qrCanvas"></canvas>
+      <p>Send <strong>${bnbToSend} BNB</strong> to purchase <strong>${tokens}</strong> CryptoPin tokens.</p>
+    `;
+  }
+  
+  </script>
 
 </body>
 </html>
