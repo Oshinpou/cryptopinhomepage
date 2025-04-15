@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>CryptoPin Login</title>
   <meta charset="UTF-8">
+  <title>CryptoPin Login</title>
   <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <link rel="stylesheet" href="styles.css">
   <style>
     body { font-family: Arial; padding: 20px; background: #f5f5f5; }
@@ -29,190 +30,53 @@
   </div>
 
   <div id="form-container">
-   <!-- Sign Up -->
-<h3>Sign Up</h3>
-<input type="text" id="su_username" placeholder="Username">
-<input type="email" id="su_email" placeholder="Email">
-<input type="password" id="su_pass" placeholder="Password">
-<button onclick="signUp(
-  su_username.value,
-  su_email.value,
-  su_pass.value)">Create Account</button>
+    <!-- Sign Up Form -->
+    <div id="signup-form" class="hidden">
+      <h3>Sign Up</h3>
+      <input type="text" id="su_username" placeholder="Username">
+      <input type="email" id="su_email" placeholder="Email">
+      <input type="password" id="su_pass" placeholder="Password">
+      <button onclick="signUp(
+        su_username.value,
+        su_email.value,
+        su_pass.value)">Create Account</button>
+    </div>
 
-<!-- Login -->
-<h3>Login</h3>
-<input type="email" id="lo_email" placeholder="Email">
-<input type="password" id="lo_pass" placeholder="Password">
-<button onclick="login(
-  lo_email.value,
-  lo_pass.value)">Login</button>
+    <!-- Login Form -->
+    <div id="login-form">
+      <h3>Login</h3>
+      <input type="email" id="lo_email" placeholder="Email">
+      <input type="password" id="lo_pass" placeholder="Password">
+      <button onclick="login(
+        lo_email.value,
+        lo_pass.value)">Login</button>
+    </div>
 
-<!-- Reset -->
-<h3>Reset Password</h3>
-<input type="email" id="re_email" placeholder="Email">
-<input type="password" id="re_pass" placeholder="New Password">
-<button onclick="resetPassword(
-  re_email.value,
-  re_pass.value)">Reset</button>
+    <!-- Reset Password Form -->
+    <div id="reset-form" class="hidden">
+      <h3>Reset Password</h3>
+      <input type="email" id="re_email" placeholder="Email">
+      <input type="password" id="re_pass" placeholder="New Password">
+      <button onclick="resetPassword(
+        re_email.value,
+        re_pass.value)">Reset</button>
+    </div>
 
-<!-- Delete -->
-<h3>Delete Account</h3>
-<input type="email" id="de_email" placeholder="Email">
-<input type="password" id="de_pass" placeholder="Password">
-<button onclick="deleteAccount(
-  de_email.value,
-  de_pass.value)">Delete Account</button>
-    
+    <!-- Delete Account Form -->
+    <div id="delete-form" class="hidden">
+      <h3>Delete Account</h3>
+      <input type="email" id="de_email" placeholder="Email">
+      <input type="password" id="de_pass" placeholder="Password">
+      <button onclick="deleteAccount(
+        de_email.value,
+        de_pass.value)">Delete Account</button>
+    </div>
+
     <div id="output" class="msg"></div>
     <div id="error" class="error"></div>
   </div>
 </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-  <script src="login.js"></script>
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
-  <script>
-  const db = new PouchDB('users');
-  const remote = 'https://your-couchdb-url.com/users'; // replace with your CouchDB URL
-
-  db.sync(remote, { live: true, retry: true });
-
-  function switchForm(form) {
-    document.getElementById("form-title").textContent = form.charAt(0).toUpperCase() + form.slice(1);
-    document.getElementById("login-form").classList.add("hidden");
-    document.getElementById("signup-form").classList.add("hidden");
-    document.getElementById("reset-form").classList.add("hidden");
-    document.getElementById(`${form}-form`).classList.remove("hidden");
-    clearMessages();
-  }
-
-  function clearMessages() {
-    document.getElementById("output").textContent = "";
-    document.getElementById("error").textContent = "";
-  }
-
-  async function signup() {
-    clearMessages();
-    const username = document.getElementById("signup-username").value;
-    const email = document.getElementById("signup-email").value;
-    const password = document.getElementById("signup-password").value;
-
-    if (!email || !password || !username) return showError("All fields required");
-
-    try {
-      const existing = await db.get(email);
-      showError("User already exists.");
-    } catch {
-      const user = {
-        _id: email,
-        username,
-        email,
-        password,
-        created: new Date().toISOString()
-      };
-      await db.put(user);
-      showMessage("Signup successful! Please login.");
-      switchForm("login");
-    }
-  }
-
-  async function login() {
-    clearMessages();
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
-
-    try {
-      const user = await db.get(email);
-      if (user.password === password) {
-        localStorage.setItem("loggedInUser", JSON.stringify(user));
-        showMessage("Login successful!");
-        window.location.href = "dashboard.html";
-      } else {
-        showError("Incorrect password.");
-      }
-    } catch {
-      showError("User not found.");
-    }
-  }
-
-  function resetPassword() {
-    clearMessages();
-    const email = document.getElementById("reset-email").value;
-    if (!email) return showError("Enter your email");
-
-    showMessage("If your email exists, a reset link will be sent. (Simulation only)");
-  }
-
-  function showMessage(msg) {
-    document.getElementById("output").textContent = msg;
-  }
-
-  function showError(msg) {
-    document.getElementById("error").textContent = msg;
-  }
-    
-const userDB = new PouchDB('users_db');
-
-// Hashing (simple base64 for local use only)
-function hash(text) {
-  return btoa(text); // NOT secure, just for prototype. Replace with SHA later.
-}
-
-// Sign Up
-function signUp(username, email, password) {
-  const id = email;
-  userDB.put({
-    _id: id,
-    username: username,
-    email: email,
-    password: hash(password),
-    createdAt: new Date().toISOString()
-  }).then(() => {
-    alert("Account created! Please log in.");
-  }).catch(err => {
-    if (err.name === "conflict") alert("Email already exists.");
-    else alert("Error: " + err.message);
-  });
-}
-
-// Login
-function login(email, password) {
-  userDB.get(email).then(doc => {
-    if (doc.password === hash(password)) {
-      localStorage.setItem("user", JSON.stringify(doc)); // Store session
-      window.location.href = "dashboard.html";
-    } else {
-      alert("Wrong password.");
-    }
-  }).catch(() => alert("User not found."));
-}
-
-// Reset Password
-function resetPassword(email, newPassword) {
-  userDB.get(email).then(doc => {
-    doc.password = hash(newPassword);
-    return userDB.put(doc);
-  }).then(() => alert("Password reset successful.")).catch(() => alert("User not found."));
-}
-
-// Delete Account
-function deleteAccount(email, password) {
-  userDB.get(email).then(doc => {
-    if (doc.password === hash(password)) {
-      return userDB.remove(doc);
-    } else {
-      throw new Error("Wrong password.");
-    }
-  }).then(() => {
-    alert("Account deleted.");
-    localStorage.removeItem("user");
-  }).catch(err => alert(err.message));
-}
-
-  
-  </script>
+<script src="login.js"></script>
 </body>
 </html>
