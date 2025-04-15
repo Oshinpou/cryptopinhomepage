@@ -119,3 +119,8 @@ function handleGenerateQR() {
   }
   generatePaymentQR(amount);
 }
+
+function refreshQR() {
+  document.getElementById("qrCode").innerHTML = "";
+  document.getElementById("qrBnbAmount").value = "";
+}
