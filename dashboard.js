@@ -97,3 +97,16 @@ function showError(message) {
     backgroundColor: "red",
   }).showToast();
 }
+
+function generatePaymentQR(amount) {
+  const recipient = "YOUR_BNB_WALLET_ADDRESS"; // Replace with your wallet
+  const qrData = `ethereum:${recipient}?value=${web3.utils.toHex(web3.utils.toWei(amount, 'ether'))}`;
+  
+  document.getElementById("qrCode").innerHTML = "";
+  new QRCode(document.getElementById("qrCode"), {
+    text: qrData,
+    width: 256,
+    height: 256,
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
