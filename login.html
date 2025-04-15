@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CryptoPin Login</title>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .form-box { background: white; padding: 20px; border-radius: 12px; max-width: 400px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .form-box h2 { margin-bottom: 10px; }
+    input, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #ccc; }
+    .tab { margin: 15px 0; display: flex; justify-content: space-around; }
+    .tab button { width: 32%; }
+    .hidden { display: none; }
+    .msg { color: green; font-size: 14px; margin-top: 8px; }
+    .error { color: red; font-size: 14px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="form-box">
+  <h2 id="form-title">Login</h2>
+
+  <div class="tab">
+    <button onclick="switchForm('login')">Login</button>
+    <button onclick="switchForm('signup')">Sign Up</button>
+    <button onclick="switchForm('reset')">Reset</button>
+  </div>
+
+  <div id="form-container">
+    <!-- Login -->
+    <div id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Signup -->
+    <div id="signup-form" class="hidden">
+      <input type="text" id="signup-username" placeholder="Username" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <!-- Reset -->
+    <div id="reset-form" class="hidden">
+      <input type="email" id="reset-email" placeholder="Enter your email">
+      <button onclick="resetPassword()">Send Reset Link</button>
+    </div>
+
+    <div id="output" class="msg"></div>
+    <div id="error" class="error"></div>
+  </div>
+</div>
+
+<script>
+  const db = new PouchDB('users');
+  const remote = 'https://your-couchdb-url.com/users'; // replace with your CouchDB URL
+
+  db.sync(remote, { live: true, retry: true });
+
+  function switchForm(form) {
+    document.getElementById("form-title").textContent = form.charAt(0).toUpperCase() + form.slice(1);
+    document.getElementById("login-form").classList.add("hidden");
+    document.getElementById("signup-form").classList.add("hidden");
+    document.getElementById("reset-form").classList.add("hidden");
+    document.getElementById(`${form}-form`).classList.remove("hidden");
+    clearMessages();
+  }
+
+  function clearMessages() {
+    document.getElementById("output").textContent = "";
+    document.getElementById("error").textContent = "";
+  }
+
+  async function signup() {
+    clearMessages();
+    const username = document.getElementById("signup-username").value;
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+
+    if (!email || !password || !username) return showError("All fields required");
+
+    try {
+      const existing = await db.get(email);
+      showError("User already exists.");
+    } catch {
+      const user = {
+        _id: email,
+        username,
+        email,
+        password,
+        created: new Date().toISOString()
+      };
+      await db.put(user);
+      showMessage("Signup successful! Please login.");
+      switchForm("login");
+    }
+  }
+
+  async function login() {
+    clearMessages();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    try {
+      const user = await db.get(email);
+      if (user.password === password) {
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+        showMessage("Login successful!");
+        window.location.href = "dashboard.html";
+      } else {
+        showError("Incorrect password.");
+      }
+    } catch {
+      showError("User not found.");
+    }
+  }
+
+  function resetPassword() {
+    clearMessages();
+    const email = document.getElementById("reset-email").value;
+    if (!email) return showError("Enter your email");
+
+    showMessage("If your email exists, a reset link will be sent. (Simulation only)");
+  }
+
+  function showMessage(msg) {
+    document.getElementById("output").textContent = msg;
+  }
+
+  function showError(msg) {
+    document.getElementById("error").textContent = msg;
+  }
+</script>
+</body>
+</html>
