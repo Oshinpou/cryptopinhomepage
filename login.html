@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>CryptoPin Login</title>
@@ -7,76 +6,105 @@
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <link rel="stylesheet" href="styles.css">
   <style>
-    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
-    .form-box { background: white; padding: 20px; border-radius: 12px; max-width: 400px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .form-box h2 { margin-bottom: 10px; }
-    input, button { width: 100%; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #ccc; }
-    .tab { margin: 15px 0; display: flex; justify-content: space-around; }
-    .tab button { width: 32%; }
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: white;
+    }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .form-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+    .form-box h2, .form-box h3 { color: #fff; }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    input { background: #f0f0f0; color: #000; }
+    button {
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #218838; }
+    .tab {
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-around;
+    }
+    .tab button {
+      background: #007bff;
+      width: 32%;
+    }
+    .tab button:hover { background: #0056b3; }
     .hidden { display: none; }
-    .msg { color: green; font-size: 14px; margin-top: 8px; }
-    .error { color: red; font-size: 14px; margin-top: 8px; }
+    .msg, .error {
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    .msg { color: lightgreen; }
+    .error { color: #ff6666; }
   </style>
 </head>
-<body>
-
-<div class="form-box">
-  <h2 id="form-title">Login</h2>
-
-  <div class="tab">
+<body><div class="form-box">
+  <h2 id="form-title">CryptoPin Access</h2>  <div class="tab">
     <button onclick="switchForm('login')">Login</button>
     <button onclick="switchForm('signup')">Sign Up</button>
     <button onclick="switchForm('reset')">Reset</button>
-  </div>
-
-  <div id="form-container">
+  </div>  <div id="form-container">
     <!-- Sign Up Form -->
     <div id="signup-form" class="hidden">
-      <h3>Sign Up</h3>
+      <h3>Create Account</h3>
       <input type="text" id="su_username" placeholder="Username">
       <input type="email" id="su_email" placeholder="Email">
       <input type="password" id="su_pass" placeholder="Password">
-      <button onclick="signUp(
-        su_username.value,
-        su_email.value,
-        su_pass.value)">Create Account</button>
-    </div>
-
-    <!-- Login Form -->
-    <div id="login-form">
-      <h3>Login</h3>
-      <input type="email" id="lo_email" placeholder="Email">
-      <input type="password" id="lo_pass" placeholder="Password">
-      <button onclick="login(
-        lo_email.value,
-        lo_pass.value)">Login</button>
-    </div>
-
-    <!-- Reset Password Form -->
-    <div id="reset-form" class="hidden">
-      <h3>Reset Password</h3>
-      <input type="email" id="re_email" placeholder="Email">
-      <input type="password" id="re_pass" placeholder="New Password">
-      <button onclick="resetPassword(
-        re_email.value,
-        re_pass.value)">Reset</button>
-    </div>
-
-    <!-- Delete Account Form -->
-    <div id="delete-form" class="hidden">
-      <h3>Delete Account</h3>
-      <input type="email" id="de_email" placeholder="Email">
-      <input type="password" id="de_pass" placeholder="Password">
-      <button onclick="deleteAccount(
-        de_email.value,
-        de_pass.value)">Delete Account</button>
-    </div>
-
-    <div id="output" class="msg"></div>
-    <div id="error" class="error"></div>
-  </div>
+      <button onclick="signUp(su_username.value, su_email.value, su_pass.value)">Create Account</button>
+    </div><!-- Login Form -->
+<div id="login-form">
+  <h3>Login</h3>
+  <input type="text" id="lo_username" placeholder="Username">
+  <input type="password" id="lo_pass" placeholder="Password">
+  <button onclick="login(lo_username.value, lo_pass.value)">Login</button>
 </div>
 
-<script src="login.js"></script>
-</body>
+<!-- Reset Password Form -->
+<div id="reset-form" class="hidden">
+  <h3>Reset Password</h3>
+  <input type="text" id="re_username" placeholder="Username">
+  <input type="email" id="re_email" placeholder="Email">
+  <input type="password" id="re_new_pass" placeholder="New Password">
+  <button onclick="resetPassword(re_username.value, re_email.value, re_new_pass.value)">Reset</button>
+</div>
+
+<!-- Delete Account Form -->
+<div id="delete-form" class="hidden">
+  <h3>Delete Account</h3>
+  <input type="text" id="de_username" placeholder="Username">
+  <input type="email" id="de_email" placeholder="Email">
+  <input type="password" id="de_pass" placeholder="Password">
+  <button onclick="deleteAccount(de_username.value, de_email.value, de_pass.value)">Delete Account</button>
+</div>
+
+<div id="output" class="msg"></div>
+<div id="error" class="error"></div>
+
+  </div>
+</div><script src="login.js"></script></body>
 </html>
