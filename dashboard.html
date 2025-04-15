@@ -1,102 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background: #1a1a1a;
-        }
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
-        .dashboard-container {
-            text-align: center;
-            margin-top: 15%;
-            color: #fff;
-        }
-        button {
-            background-color: #D4AF37;
-            color: #000;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #b7952c;
-        }
-    </style>
+  <title>CryptoPin Dashboard</title>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f0f4f8; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { margin-bottom: 10px; }
+    .wallet-input { width: 100%; padding: 8px; margin-top: 6px; border-radius: 8px; border: 1px solid #ccc; }
+    .token-summary { margin: 15px 0; padding: 10px; background: #e0f7e0; border-radius: 8px; }
+    .log { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 10px; max-height: 300px; overflow-y: auto; }
+    .log-entry { padding: 6px; border-bottom: 1px solid #ddd; }
+    .logout { background: #ffdddd; padding: 10px; border: none; border-radius: 8px; margin-top: 20px; cursor: pointer; }
+  </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="dashboard-container">
-        <h2>Welcome, <span id="usernameDisplay"></span></h2>
-        <button onclick="logout()">Logout</button>
-        <button onclick="redirectToSignupLogin()">SignUp/Login</button>
-    </div>
-    
-    <script>
-        // Particle Animation
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
 
-        const particles = [];
-        for (let i = 0; i < 100; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 3,
-                dx: Math.random() - 0.5,
-                dy: Math.random() - 0.5
-            });
+<div class="container">
+  <h2>Welcome, <span id="user-name"></span></h2>
+  <p>Email: <span id="user-email"></span></p>
+
+  <label>CryptoPin Wallet Address:</label>
+  <input type="text" id="wallet-address" class="wallet-input" placeholder="Enter your wallet address" onchange="updateWallet()">
+
+  <div class="token-summary">
+    <strong>Total Tokens:</strong> <span id="total-tokens">0</span>
+  </div>
+
+  <h3>Token Purchase History</h3>
+  <div class="log" id="purchase-log">
+    <!-- Entries will appear here -->
+  </div>
+
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+  const db = new PouchDB('users');
+  const purchaseDB = new PouchDB('token_purchases');
+  const remoteUsers = 'https://your-couchdb-url.com/users';
+  const remotePurchases = 'https://your-couchdb-url.com/token_purchases';
+
+  db.sync(remoteUsers, { live: true, retry: true });
+  purchaseDB.sync(remotePurchases, { live: true, retry: true });
+
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user) {
+    alert("Not logged in.");
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("user-name").textContent = user.username;
+  document.getElementById("user-email").textContent = user.email;
+  document.getElementById("wallet-address").value = user.wallet || "";
+
+  function updateWallet() {
+    const wallet = document.getElementById("wallet-address").value;
+    user.wallet = wallet;
+    db.get(user._id).then(doc => {
+      doc.wallet = wallet;
+      return db.put(doc);
+    }).then(() => {
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      alert("Wallet address updated.");
+    });
+  }
+
+  function loadPurchases() {
+    let total = 0;
+    purchaseDB.allDocs({ include_docs: true }).then(res => {
+      const log = document.getElementById("purchase-log");
+      log.innerHTML = "";
+      res.rows.forEach(row => {
+        const entry = row.doc;
+        if (entry.userEmail === user.email) {
+          const div = document.createElement("div");
+          div.className = "log-entry";
+          div.innerText = `Sent ${entry.bnb} BNB → Received ${entry.tokens} Tokens`;
+          log.appendChild(div);
+          total += parseFloat(entry.tokens);
         }
+      });
+      document.getElementById("total-tokens").textContent = total.toLocaleString();
+    });
+  }
 
-        function drawParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#D4AF37';
-            particles.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
+  }
 
-                p.x += p.dx;
-                p.y += p.dy;
+  loadPurchases();
+</script>
 
-                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-            });
-            requestAnimationFrame(drawParticles);
-        }
-        drawParticles();
-
-        // Display Username
-        const user = JSON.parse(localStorage.getItem('loggedInUser'));
-        if (user && user.username) {
-            document.getElementById('usernameDisplay').innerText = user.username;
-        } else {
-            window.location.href = 'signuplogin.html';
-        }
-
-        // Logout Function
-        function logout() {
-            localStorage.removeItem('loggedInUser');
-            window.location.href = 'signuplogin.html';
-        }
-
-        // Redirect to SignUp/Login
-        function redirectToSignupLogin() {
-            window.location.href = 'signuplogin.html';
-        }
-    </script>
 </body>
 </html>
