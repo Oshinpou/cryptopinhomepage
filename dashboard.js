@@ -124,3 +124,34 @@ function refreshQR() {
   document.getElementById("qrCode").innerHTML = "";
   document.getElementById("qrBnbAmount").value = "";
 }
+
+async function submitPayment() {
+  const txHash = document.getElementById("txHashInput").value.trim();
+  const wallet = document.getElementById("cryptopinWallet").value.trim();
+  const bnbAmount = parseFloat(document.getElementById("qrBnbAmount").value);
+
+  if (!txHash || !wallet || !bnbAmount) {
+    alert("Fill all fields correctly.");
+    return;
+  }
+
+  const tokens = bnbAmount * 100000; // Example conversion
+
+  const user = localStorage.getItem("cryptopin_user");
+  const userDB = new PouchDB(user);
+  const entry = {
+    _id: new Date().toISOString(),
+    type: "transaction",
+    bnb: bnbAmount,
+    tokens,
+    txHash,
+    cryptoWallet: wallet
+  };
+
+  await userDB.put(entry);
+
+  Toastify({ text: `Success! You bought ${tokens} CryptoPin tokens.`, duration: 4000, style: { background: "#0f0" } }).showToast();
+
+  document.getElementById("txHashInput").value = "";
+  document.getElementById("cryptopinWallet").value = "";
+}
