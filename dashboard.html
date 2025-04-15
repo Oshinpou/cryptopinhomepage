@@ -86,6 +86,9 @@ button {
   <label>CryptoPin Wallet Address:</label>
   <input type="text" id="wallet-address" class="wallet-input" placeholder="Enter your wallet address" onchange="updateWallet()">
 
+ <input type="number" id="qrBnbAmount" placeholder="Enter BNB amount">
+<button onclick="handleGenerateQR()">Generate Payment QR</button>
+<div id="qrCode"></div>
   <div class="token-summary">
     <strong>Total Tokens:</strong> <span id="total-tokens">0</span>
   </div>
