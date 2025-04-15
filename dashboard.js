@@ -1,12 +1,10 @@
-window.onload = function () {
-    const username = localStorage.getItem('currentUser');
-    if (!username) {
-        window.location.href = 'signuplogin.html';
-    }
-    document.getElementById('usernameDisplay').innerText = username;
-};
-
-function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'signuplogin.html';
+function paymentSuccess(amount) {
+  Toastify({
+    text: `You’ve successfully bought ${amount} CryptoPin tokens!`,
+    duration: 5000,
+    close: true,
+    gravity: "top", 
+    position: "center", 
+    backgroundColor: "green",
+  }).showToast();
 }
