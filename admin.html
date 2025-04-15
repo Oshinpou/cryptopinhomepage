@@ -31,9 +31,25 @@
     <h3>Token Purchases</h3>
     <div id="purchase-list"></div>
   </div>
-</div>
+   <div id="adminLoginBox">
+      <input type="email" id="adminEmail" placeholder="Admin Email"><br>
+      <input type="password" id="adminPassword" placeholder="Password"><br>
+      <button onclick="adminLogin()">Login</button>
+    </div>
+    <div id="adminDashboard" style="display:none;">
+      <h3>Users</h3>
+      <div id="userList"></div>
+      <h3>Transactions</h3>
+      <div id="allTransactions"></div>
+      <button onclick="adminLogout()">Logout</button>
+    </div>
 
-<script>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@7.3.1/dist/pouchdb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="admin.js"></script>
+
+  <script>
   const dbUsers = new PouchDB('users');
   const dbPurchases = new PouchDB('token_purchases');
   const remoteUsers = 'https://your-couchdb-url.com/users';
