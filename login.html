@@ -140,6 +140,66 @@
   function showError(msg) {
     document.getElementById("error").textContent = msg;
   }
-</script>
+    
+const userDB = new PouchDB('users_db');
+
+// Hashing (simple base64 for local use only)
+function hash(text) {
+  return btoa(text); // NOT secure, just for prototype. Replace with SHA later.
+}
+
+// Sign Up
+function signUp(username, email, password) {
+  const id = email;
+  userDB.put({
+    _id: id,
+    username: username,
+    email: email,
+    password: hash(password),
+    createdAt: new Date().toISOString()
+  }).then(() => {
+    alert("Account created! Please log in.");
+  }).catch(err => {
+    if (err.name === "conflict") alert("Email already exists.");
+    else alert("Error: " + err.message);
+  });
+}
+
+// Login
+function login(email, password) {
+  userDB.get(email).then(doc => {
+    if (doc.password === hash(password)) {
+      localStorage.setItem("user", JSON.stringify(doc)); // Store session
+      window.location.href = "dashboard.html";
+    } else {
+      alert("Wrong password.");
+    }
+  }).catch(() => alert("User not found."));
+}
+
+// Reset Password
+function resetPassword(email, newPassword) {
+  userDB.get(email).then(doc => {
+    doc.password = hash(newPassword);
+    return userDB.put(doc);
+  }).then(() => alert("Password reset successful.")).catch(() => alert("User not found."));
+}
+
+// Delete Account
+function deleteAccount(email, password) {
+  userDB.get(email).then(doc => {
+    if (doc.password === hash(password)) {
+      return userDB.remove(doc);
+    } else {
+      throw new Error("Wrong password.");
+    }
+  }).then(() => {
+    alert("Account deleted.");
+    localStorage.removeItem("user");
+  }).catch(err => alert(err.message));
+}
+
+  
+  </script>
 </body>
 </html>
