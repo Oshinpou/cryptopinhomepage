@@ -29,27 +29,40 @@
   </div>
 
   <div id="form-container">
-    <!-- Login -->
-    <div id="login-form">
-      <input type="email" id="login-email" placeholder="Email" required>
-      <input type="password" id="login-password" placeholder="Password" required>
-      <button onclick="login()">Login</button>
-    </div>
+   <!-- Sign Up -->
+<h3>Sign Up</h3>
+<input type="text" id="su_username" placeholder="Username">
+<input type="email" id="su_email" placeholder="Email">
+<input type="password" id="su_pass" placeholder="Password">
+<button onclick="signUp(
+  su_username.value,
+  su_email.value,
+  su_pass.value)">Create Account</button>
 
-    <!-- Signup -->
-    <div id="signup-form" class="hidden">
-      <input type="text" id="signup-username" placeholder="Username" required>
-      <input type="email" id="signup-email" placeholder="Email" required>
-      <input type="password" id="signup-password" placeholder="Password" required>
-      <button onclick="signup()">Sign Up</button>
-    </div>
+<!-- Login -->
+<h3>Login</h3>
+<input type="email" id="lo_email" placeholder="Email">
+<input type="password" id="lo_pass" placeholder="Password">
+<button onclick="login(
+  lo_email.value,
+  lo_pass.value)">Login</button>
 
-    <!-- Reset -->
-    <div id="reset-form" class="hidden">
-      <input type="email" id="reset-email" placeholder="Enter your email">
-      <button onclick="resetPassword()">Send Reset Link</button>
-    </div>
+<!-- Reset -->
+<h3>Reset Password</h3>
+<input type="email" id="re_email" placeholder="Email">
+<input type="password" id="re_pass" placeholder="New Password">
+<button onclick="resetPassword(
+  re_email.value,
+  re_pass.value)">Reset</button>
 
+<!-- Delete -->
+<h3>Delete Account</h3>
+<input type="email" id="de_email" placeholder="Email">
+<input type="password" id="de_pass" placeholder="Password">
+<button onclick="deleteAccount(
+  de_email.value,
+  de_pass.value)">Delete Account</button>
+    
     <div id="output" class="msg"></div>
     <div id="error" class="error"></div>
   </div>
