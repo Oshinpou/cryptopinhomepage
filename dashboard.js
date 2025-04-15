@@ -110,3 +110,12 @@ function generatePaymentQR(amount) {
     correctLevel: QRCode.CorrectLevel.H
   });
 }
+
+function handleGenerateQR() {
+  const amount = document.getElementById("qrBnbAmount").value;
+  if (!amount || parseFloat(amount) <= 0) {
+    alert("Enter a valid BNB amount.");
+    return;
+  }
+  generatePaymentQR(amount);
+}
