@@ -155,3 +155,42 @@ async function submitPayment() {
   document.getElementById("txHashInput").value = "";
   document.getElementById("cryptopinWallet").value = "";
 }
+
+
+  // Initialize local PouchDB
+  const localTransactions = new PouchDB('user_transactions');
+
+  // Replace with your CouchDB endpoint
+  const remoteTransactions = new PouchDB('https://admin:password@your-couchdb-domain.com/transactions_db');
+
+  // Sync data in real-time
+  localTransactions.sync(remoteTransactions, {
+    live: true,
+    retry: true
+  }).on('change', function (info) {
+    console.log("Sync Change: ", info);
+  }).on('error', function (err) {
+    console.error("Sync Error:", err);
+  });
+
+  // Save transaction
+  function saveTransaction(data) {
+    const record = {
+      _id: new Date().toISOString(),
+      username: data.username,
+      email: data.email,
+      bnbAmount: data.bnb,
+      tokens: data.tokens,
+      cryptopinWallet: data.wallet,
+      txHash: data.tx,
+      time: new Date().toLocaleString()
+    };
+
+    localTransactions.put(record).then(() => {
+      console.log("Transaction saved locally.");
+    }).catch(err => console.error("Save Error:", err));
+  }
+
+  // Example usage:
+  // saveTransaction({ username: 'john', email: 'john@gmail.com', bnb: 1, tokens: 100000, wallet: '0x...', tx: '0xhash' });
+
