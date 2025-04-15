@@ -98,3 +98,133 @@ function loginSuccess() {
     backgroundColor: "green",
   }).showToast();
 }
+
+// Initialize PouchDB instance
+const userDB = new PouchDB('users');
+const remote = 'https://your-couchdb-url.com/users'; // Replace with your CouchDB URL
+
+// Sync with remote CouchDB (optional for now)
+userDB.sync(remote, { live: true, retry: true });
+
+// Switch between forms (Login, Sign Up, Reset)
+function switchForm(form) {
+  document.getElementById("form-title").textContent = form.charAt(0).toUpperCase() + form.slice(1);
+  
+  // Hide all forms
+  document.getElementById("login-form").classList.add("hidden");
+  document.getElementById("signup-form").classList.add("hidden");
+  document.getElementById("reset-form").classList.add("hidden");
+  document.getElementById("delete-form").classList.add("hidden");
+
+  // Show selected form
+  document.getElementById(`${form}-form`).classList.remove("hidden");
+  clearMessages();
+}
+
+// Clear output and error messages
+function clearMessages() {
+  document.getElementById("output").textContent = "";
+  document.getElementById("error").textContent = "";
+}
+
+// Hashing (simple base64 for local use only, replace with SHA later)
+function hash(text) {
+  return btoa(text); // NOT secure, just for prototype. Replace with SHA later.
+}
+
+// Sign Up - Create a new account
+async function signUp(username, email, password) {
+  clearMessages();
+  
+  if (!username || !email || !password) {
+    return showError("All fields are required");
+  }
+
+  try {
+    const existing = await userDB.get(email);
+    showError("User already exists.");
+  } catch {
+    const user = {
+      _id: email,
+      username,
+      email,
+      password: hash(password),
+      created: new Date().toISOString()
+    };
+    await userDB.put(user);
+    showMessage("Signup successful! Please login.");
+    switchForm("login");
+  }
+}
+
+// Login - Authenticate the user
+async function login(email, password) {
+  clearMessages();
+  
+  if (!email || !password) {
+    return showError("All fields are required");
+  }
+
+  try {
+    const user = await userDB.get(email);
+    if (user.password === hash(password)) {
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      showMessage("Login successful!");
+      window.location.href = "dashboard.html";  // Redirect to dashboard
+    } else {
+      showError("Incorrect password.");
+    }
+  } catch {
+    showError("User not found.");
+  }
+}
+
+// Reset Password - Change password functionality
+async function resetPassword(email, newPassword) {
+  clearMessages();
+  
+  if (!email || !newPassword) {
+    return showError("Email and New Password are required.");
+  }
+
+  try {
+    const user = await userDB.get(email);
+    user.password = hash(newPassword);
+    await userDB.put(user);
+    showMessage("Password reset successful.");
+  } catch {
+    showError("User not found.");
+  }
+}
+
+// Delete Account - Remove the user account
+async function deleteAccount(email, password) {
+  clearMessages();
+  
+  if (!email || !password) {
+    return showError("Email and Password are required.");
+  }
+
+  try {
+    const user = await userDB.get(email);
+    if (user.password === hash(password)) {
+      await userDB.remove(user);
+      showMessage("Account deleted.");
+      localStorage.removeItem("loggedInUser");
+    } else {
+      showError("Incorrect password.");
+    }
+  } catch {
+    showError("User not found.");
+  }
+}
+
+// Show success messages
+function showMessage(msg) {
+  document.getElementById("output").textContent = msg;
+}
+
+// Show error messages
+function showError(msg) {
+  document.getElementById("error").textContent = msg;
+}                     
